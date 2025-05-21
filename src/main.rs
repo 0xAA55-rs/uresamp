@@ -17,6 +17,8 @@ const LANG: Lang = Lang::Zh;
 #[cfg(feature = "language_en")]
 const LANG: Lang = Lang::En;
 
+const MIN_FFT_SIZE: usize = 4096;
+
 fn usage(arg0: &str) {
     match LANG {
         Lang::Zh => {
@@ -179,7 +181,7 @@ fn main() -> ExitCode {
     };
     let orig_length = some_text.len();
 
-    let process_length = max(orig_length, target_length);
+    let process_length = max(max(orig_length, target_length), MIN_FFT_SIZE);
     let mut fft_length = 1usize;
     for i in 0..usize::BITS {
         fft_length = 1 << i;
