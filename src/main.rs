@@ -176,7 +176,6 @@ fn main() -> ExitCode {
     let resampler = Resampler::new(fft_length);
 
     let mut real_numbers: Vec<f32> = some_text.iter().map(|&c|c as u32 as f32).collect();
-    dbg!(&real_numbers);
     let avg = real_numbers.iter().sum::<f32>() / real_numbers.len() as f32;
     real_numbers.iter_mut().for_each(|n|*n -= avg);
     let result = match resampler.resample_core(&real_numbers, target_length) {
@@ -185,7 +184,6 @@ fn main() -> ExitCode {
             result.iter_mut().for_each(|n|*n -= new_avg);
             let mut result = fitting(&result, &real_numbers, tolerance);
             result.iter_mut().for_each(|n|*n += avg);
-            dbg!(&result);
             result.iter().map(|&n|char::from_u32(max(n as u32, 0x20))).flatten().collect::<String>()
         }
         Err(e) => {
