@@ -10,3 +10,6 @@ repository = "https://github.com/0xAA55-rs/uresamp"
 
 [dependencies]
 resampler-rs = "0.0.8"
+
+[profile.release]
+lto = "fat"
