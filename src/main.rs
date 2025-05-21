@@ -88,7 +88,6 @@ fn main() -> ExitCode {
             length = Some(l);
         }
         _ => {
-            eprintln!("Unknown option \"{arg1}\"");
             match LANG {
                 Lang::En => eprintln!("Unknown option \"{arg1}\""),
                 Lang::Zh => eprintln!("未知参数： \"{arg1}\""),
