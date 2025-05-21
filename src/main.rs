@@ -26,7 +26,8 @@ fn main() -> ExitCode {
 
     let ratio: Option<&str>;
     let length: Option<&str>;
-    let i;
+    let mut i;
+    let mut tolerance = 0.0;
 
     match &arg1[..2] {
         "-r" => {
@@ -63,6 +64,39 @@ fn main() -> ExitCode {
             eprintln!("Unknown option \"{arg1}\"");
             usage(&arg0);
             return ExitCode::from(1);
+        }
+    }
+
+    // Parse tolerance if given
+    if arg.len() > i {
+        let argi = &arg[i];
+        let argi: Vec<char> = argi.chars().collect();
+        if argi.len() >= 2 {
+            match &argi[..2] {
+                val if val == "-t".chars().collect::<Vec<_>>() => {
+                    let argi = &arg[i];
+                    let t = &argi[2..];
+                    if t.len() != 0 {
+                        match t.parse() {
+                            Ok(t) => {
+                                tolerance = t;
+                                i += 1;
+                            }
+                            _ => (),
+                        }
+                    } else if t.len() == 0 && arg.len() > i + 1 {
+                        match arg[i + 1].parse() {
+                            Ok(t) => {
+                                tolerance = t;
+                                i += 2;
+                            }
+                            _ => (),
+                        }
+                    } // else the tolerance parameter is not given
+                }
+                // Not given.
+                _ => (),
+            }
         }
     }
 
