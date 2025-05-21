@@ -182,7 +182,9 @@ fn main() -> ExitCode {
     let result = match resampler.resample_core(&real_numbers, target_length) {
         Ok(mut result) => {
             let new_avg = result.iter().sum::<f32>() / result.len() as f32;
-            result.iter_mut().for_each(|n|*n += avg - new_avg);
+            result.iter_mut().for_each(|n|*n -= new_avg);
+            let mut result = fitting(&result, &real_numbers, tolerance);
+            result.iter_mut().for_each(|n|*n += avg);
             dbg!(&result);
             result.iter().map(|&n|char::from_u32(max(n as u32, 0x20))).flatten().collect::<String>()
         }
