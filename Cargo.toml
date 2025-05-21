@@ -1,0 +1,12 @@
+[package]
+name = "uresamp"
+version = "0.1.0"
+edition = "2024"
+authors = ["0xAA55 <838816058@qq.com>"]
+license-file = "LICENSE"
+readme = "Readme.md"
+description = "HIFI uresamp delivers ultrasonic-fidelity text resampling via adaptive 64-bit floating-point spectral mapping, preserving Unicode 32-bit codepoint integrity with zero-phase distortion"
+repository = "https://github.com/0xAA55-rs/uresamp"
+
+[dependencies]
+resampler-rs = "0.0.8"
