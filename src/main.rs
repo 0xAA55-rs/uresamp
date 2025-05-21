@@ -108,12 +108,6 @@ fn main() -> ExitCode {
 
     let some_text = arg[i..].join(" ");
     let some_text: Vec<char> = some_text.chars().collect();
-    let some_text = if some_text.len() & 1 != 0 {
-        some_text.iter().chain(some_text.iter().last()).copied().collect()
-    } else {
-        some_text
-    };
-    let orig_length = some_text.len();
     let target_length = if let Some(ratio) = ratio {
         let ratio = match ratio.parse::<f64>() {
             Ok(ratio) => ratio,
@@ -137,6 +131,14 @@ fn main() -> ExitCode {
     } else {
         unreachable!();
     };
+
+    let target_length = target_length + (target_length & 1);
+    let some_text = if some_text.len() & 1 != 0 {
+        some_text.iter().chain(some_text.iter().last()).copied().collect()
+    } else {
+        some_text
+    };
+    let orig_length = some_text.len();
 
     let process_length = max(orig_length, target_length);
     let mut fft_length = 1usize;
