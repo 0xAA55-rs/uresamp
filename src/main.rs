@@ -112,6 +112,30 @@ fn main() -> ExitCode {
             break;
         }
     }
+
+    fn get_nearest(num: f32, arr: &[f32]) -> (f32, f32) {
+        let mut diff = f32::MAX;
+        let mut ret = 0.0;
+        arr.iter().for_each(|&n|{
+            let new_diff = (n - num).abs();
+            if new_diff < diff {
+                ret = n;
+                diff = new_diff;
+            }
+        });
+        (ret, diff)
+    }
+
+    fn fitting(curve: &[f32], template: &[f32], tolerance: f32) -> Vec<f32> {
+        let mut ret = curve.to_vec();
+        ret.iter_mut().for_each(|v|{
+            let (val, diff) = get_nearest(*v, template);
+            if diff > tolerance {
+                *v = val;
+            }
+        });
+        ret
+    }
     
     let resampler = Resampler::new(fft_length);
 
