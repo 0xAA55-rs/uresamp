@@ -6,9 +6,30 @@ use std::{
 
 use resampler::Resampler;
 
+#[allow(dead_code)]
+enum Lang {
+    En,
+    Zh
+}
+
+#[cfg(feature = "language_zh")]
+const LANG: Lang = Lang::Zh;
+#[cfg(feature = "language_en")]
+const LANG: Lang = Lang::En;
+
 fn usage(arg0: &str) {
-    eprintln!("Usage: {arg0} <-r ratio | -l length> <some text>");
-    eprintln!("Resample your text by a ratio or a length using a HIFI Resampler, each character's Unicode point is treated as an audio sample point. No audio artifact is guaranteed.");
+    match LANG {
+        Lang::Zh => {
+            eprintln!("用法：{arg0} <-r 比率 | -l 长度> [-t 容差] <一些文本>");
+            eprintln!("使用 HIFI 重采样器按一定比率或长度对文本进行重采样，每个字符的 Unicode 点将被视为音频采样点。保证音频不失真。");
+            eprintln!("容差值的作用是用来控制输出的字符是从输入的字符里面提取还是从重采样器的输出值里提取。容差值越大，越倾向于从重采样器的输出值里提取，输出的内容也越混乱。")
+        }
+        Lang::En => {
+            eprintln!("Usage: {arg0} <-r ratio | -l length> [-t tolerance] <some text>");
+            eprintln!("Resample your text by a ratio or a length using a HIFI Resampler, each character's Unicode point is treated as an audio sample point. It is guaranteed that no audio artifact will happen.");
+            eprintln!("The tolerance value is used to control whether the output characters are extracted from the input characters or from the output value of the resampler. The larger the tolerance value, the more it tends to be extracted from the output value of the resampler, and the more chaotic the output content is.")
+        }
+    }
 }
 
 fn main() -> ExitCode {
@@ -38,7 +59,10 @@ fn main() -> ExitCode {
                 r = &arg[2];
                 i = 3;
             } else {
-                eprintln!("Please input the ratio.");
+                match LANG {
+                    Lang::En => eprintln!("Please input the ratio."),
+                    Lang::Zh => eprintln!("请输入比率值。"),
+                }
                 usage(arg0);
                 return ExitCode::from(1);
             }
@@ -53,7 +77,10 @@ fn main() -> ExitCode {
                 l = &arg[2];
                 i = 3;
             } else {
-                eprintln!("Please input the length.");
+                match LANG {
+                    Lang::En => eprintln!("Please input the length."),
+                    Lang::Zh => eprintln!("请输入长度值。"),
+                }
                 usage(arg0);
                 return ExitCode::from(1);
             }
@@ -62,6 +89,10 @@ fn main() -> ExitCode {
         }
         _ => {
             eprintln!("Unknown option \"{arg1}\"");
+            match LANG {
+                Lang::En => eprintln!("Unknown option \"{arg1}\""),
+                Lang::Zh => eprintln!("未知参数： \"{arg1}\""),
+            }
             usage(&arg0);
             return ExitCode::from(1);
         }
@@ -101,7 +132,10 @@ fn main() -> ExitCode {
     }
 
     if arg.len() <= i {
-        eprintln!("Please provide your text to resample.");
+        match LANG {
+            Lang::En => eprintln!("Please provide your text to resample."),
+            Lang::Zh => eprintln!("请输入你的文本内容来进行 HIFI 重采样。"),
+        }
         usage(&arg0);
         return ExitCode::from(1);
     }
@@ -112,7 +146,10 @@ fn main() -> ExitCode {
         let ratio = match ratio.parse::<f64>() {
             Ok(ratio) => ratio,
             Err(e) => {
-                eprintln!("Could not parse {ratio} as an number: {e}");
+                match LANG {
+                    Lang::En => eprintln!("Could not parse {ratio} as an number: {e}"),
+                    Lang::Zh => eprintln!("无法把“{ratio}”读取为数值。{e}"),
+                }
                 usage(&arg0);
                 return ExitCode::from(1);
             }
@@ -122,7 +159,10 @@ fn main() -> ExitCode {
         let length = match length.parse::<usize>() {
             Ok(length) => length,
             Err(e) => {
-                eprintln!("Could not parse {length} as an number: {e}");
+                match LANG {
+                    Lang::En => eprintln!("Could not parse {length} as an number: {e}"),
+                    Lang::Zh => eprintln!("无法把“{length}”读取为数值。{e}"),
+                }
                 usage(&arg0);
                 return ExitCode::from(1);
             }
@@ -187,7 +227,10 @@ fn main() -> ExitCode {
             result.iter().map(|&n|char::from_u32(max(n as u32, 0x20))).flatten().collect::<String>()
         }
         Err(e) => {
-            eprintln!("Error occurs when performing resample: {:?}", e);
+            match LANG {
+                Lang::En => eprintln!("Error occurs when performing resample: {:?}", e),
+                Lang::Zh => eprintln!("重采样时重采样器发生报错：{:?}", e),
+            }
             return ExitCode::from(2);
         }
     };
